@@ -1,0 +1,40 @@
+{
+  "name": "cordova-plugin-btprinter",
+  "version": "0.0.1-dev",
+  "description": "A cordova plugin for bluetooth printer for android platform.",
+  "cordova": {
+    "id": "cordova-plugin-btprinter",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CesarBalzer/Cordova-Plugin-BTPrinter.git"
+  },
+  "keywords": [
+    "cordova",
+    "bluetooth",
+    "printer",
+    "pos",
+    "text",
+    "barcode",
+    "image",
+    "base64",
+    "qrcode",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "Cesar E. Balzer",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/CesarBalzer/Cordova-Plugin-BTPrinter/issues"
+  },
+  "homepage": "https://github.com/CesarBalzer/Cordova-Plugin-BTPrinter#readme"
+}
