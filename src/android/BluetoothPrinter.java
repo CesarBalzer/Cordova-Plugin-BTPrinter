@@ -194,6 +194,7 @@ public class BluetoothPrinter extends CordovaPlugin {
                 e.printStackTrace();
                 callbackContext.error(errMsg);
             }
+            return false;
         }
 
     //This will return the array list of paired bluetooth printers
