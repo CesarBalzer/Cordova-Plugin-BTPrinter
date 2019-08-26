@@ -78,7 +78,7 @@ public class BluetoothPrinter extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("checkBTStatus")) {
-           checkBTStatus(callbackContext)
+           checkBTStatus(callbackContext);
             return true;
         } else if (action.equals("list")) {
             listBT(callbackContext);
