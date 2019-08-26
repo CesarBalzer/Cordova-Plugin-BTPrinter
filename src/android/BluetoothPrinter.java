@@ -77,7 +77,10 @@ public class BluetoothPrinter extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("list")) {
+        if (action.equals("checkBTStatus")) {
+           checkBTStatus(callbackContext)
+            return true;
+        } else if (action.equals("list")) {
             listBT(callbackContext);
             return true;
         } else if (action.equals("connect")) {
@@ -173,6 +176,23 @@ public class BluetoothPrinter extends CordovaPlugin {
         }
         return false;
     }
+
+    //This will return the status of BT adapter: true or false
+    boolean checkBTStatus(CallbackContext callbackContext){
+            try {
+                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                if (mBluetoothAdapter.isEnabled()) {
+                return true;    
+                } else {
+                    return false;
+                }
+            } catch (Exception e) {
+                String errMsg = e.getMessage();
+                Log.e(LOG_TAG, errMsg);
+                e.printStackTrace();
+                callbackContext.error(errMsg);
+            }
+        }
 
     //This will return the array list of paired bluetooth printers
     void listBT(CallbackContext callbackContext) {
