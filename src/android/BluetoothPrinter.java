@@ -183,10 +183,10 @@ public class BluetoothPrinter extends CordovaPlugin {
                 mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 if (mBluetoothAdapter.isEnabled()) {
                      callbackContext.success("true");
-                return;
+                return true;
                 } else {
                      callbackContext.success("false");
-                    return;
+                    return false;
                 }
             } catch (Exception e) {
                 String errMsg = e.getMessage();
