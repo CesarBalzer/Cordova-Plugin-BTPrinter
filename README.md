@@ -43,6 +43,19 @@ data[1] Printer address
 data[2] Printer type
 ```
 
+### Check Bluetooth status
+
+```
+BTPrinter.checkBTstatus(function(data){
+	console.log("Success");
+	console.log(data) // bt status: true or false
+},function(err){
+	console.log("Error");
+	console.log(err)
+});
+```
+
+
 ### Connect printer
 
 ```
