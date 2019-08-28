@@ -1,8 +1,8 @@
 var exec = require('cordova/exec');
 
 var BTPrinter = {
-    checkBTStatus: function (fnSuccess, fnError) {
-        exec(fnSuccess, fnError, "BluetoothPrinter", "checkBTStatus", []);
+    status: function (fnSuccess, fnError) {
+        exec(fnSuccess, fnError, "BluetoothPrinter", "status", []);
     },
     list: function (fnSuccess, fnError) {
         exec(fnSuccess, fnError, "BluetoothPrinter", "list", []);

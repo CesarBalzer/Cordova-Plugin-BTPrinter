@@ -50,35 +50,35 @@ public class BluetoothPrinter extends CordovaPlugin {
     Bitmap bitmap;
 
     public static final byte LINE_FEED = 0x0A;
-    public static final byte[] CODIFICATION = new byte[]{0x1b, 0x4D, 0x01};
+    public static final byte[] CODIFICATION = new byte[] { 0x1b, 0x4D, 0x01 };
 
-    public static final byte[] ESC_ALIGN_LEFT = {0x1B, 0x61, 0x00};
-    public static final byte[] ESC_ALIGN_RIGHT = {0x1B, 0x61, 0x02};
-    public static final byte[] ESC_ALIGN_CENTER = {0x1B, 0x61, 0x01};
+    public static final byte[] ESC_ALIGN_LEFT = { 0x1B, 0x61, 0x00 };
+    public static final byte[] ESC_ALIGN_RIGHT = { 0x1B, 0x61, 0x02 };
+    public static final byte[] ESC_ALIGN_CENTER = { 0x1B, 0x61, 0x01 };
 
-    public static final byte[] CHAR_SIZE_00 = {0x1B, 0x21, 0x00};//Normal size
-    public static final byte[] CHAR_SIZE_01 = {0x1B, 0x21, 0x01};//Reduzided width
-    public static final byte[] CHAR_SIZE_08 = {0x1B, 0x21, 0x08};//bold normal size
-    public static final byte[] CHAR_SIZE_10 = {0x1B, 0x21, 0x10};// Double height size
-    public static final byte[] CHAR_SIZE_11 = {0x1B, 0x21, 0x11};// Reduzided Double height size
-    public static final byte[] CHAR_SIZE_20 = {0x1B, 0x21, 0x20};// Double width size
-    public static final byte[] CHAR_SIZE_30 = {0x1B, 0x21, 0x30};
-    public static final byte[] CHAR_SIZE_31 = {0x1B, 0x21, 0x31};
-    public static final byte[] CHAR_SIZE_51 = {0x1B, 0x21, 0x51};
-    public static final byte[] CHAR_SIZE_61 = {0x1B, 0x21, 0x61};
+    public static final byte[] CHAR_SIZE_00 = { 0x1B, 0x21, 0x00 };// Normal size
+    public static final byte[] CHAR_SIZE_01 = { 0x1B, 0x21, 0x01 };// Reduzided width
+    public static final byte[] CHAR_SIZE_08 = { 0x1B, 0x21, 0x08 };// bold normal size
+    public static final byte[] CHAR_SIZE_10 = { 0x1B, 0x21, 0x10 };// Double height size
+    public static final byte[] CHAR_SIZE_11 = { 0x1B, 0x21, 0x11 };// Reduzided Double height size
+    public static final byte[] CHAR_SIZE_20 = { 0x1B, 0x21, 0x20 };// Double width size
+    public static final byte[] CHAR_SIZE_30 = { 0x1B, 0x21, 0x30 };
+    public static final byte[] CHAR_SIZE_31 = { 0x1B, 0x21, 0x31 };
+    public static final byte[] CHAR_SIZE_51 = { 0x1B, 0x21, 0x51 };
+    public static final byte[] CHAR_SIZE_61 = { 0x1B, 0x21, 0x61 };
 
-    public static final byte[] UNDERL_OFF = {0x1b, 0x2d, 0x00}; // Underline font OFF
-    public static final byte[] UNDERL_ON = {0x1b, 0x2d, 0x01}; // Underline font 1-dot ON
-    public static final byte[] UNDERL2_ON = {0x1b, 0x2d, 0x02}; // Underline font 2-dot ON
-    public static final byte[] BOLD_OFF = {0x1b, 0x45, 0x00}; // Bold font OFF
-    public static final byte[] BOLD_ON = {0x1b, 0x45, 0x01}; // Bold font ON
-    public static final byte[] FONT_A = {0x1b, 0x4d, 0x00}; // Font type A
-    public static final byte[] FONT_B = {0x1b, 0x4d, 0x01}; // Font type B
+    public static final byte[] UNDERL_OFF = { 0x1b, 0x2d, 0x00 }; // Underline font OFF
+    public static final byte[] UNDERL_ON = { 0x1b, 0x2d, 0x01 }; // Underline font 1-dot ON
+    public static final byte[] UNDERL2_ON = { 0x1b, 0x2d, 0x02 }; // Underline font 2-dot ON
+    public static final byte[] BOLD_OFF = { 0x1b, 0x45, 0x00 }; // Bold font OFF
+    public static final byte[] BOLD_ON = { 0x1b, 0x45, 0x01 }; // Bold font ON
+    public static final byte[] FONT_A = { 0x1b, 0x4d, 0x00 }; // Font type A
+    public static final byte[] FONT_B = { 0x1b, 0x4d, 0x01 }; // Font type B
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("checkBTStatus")) {
-           checkBTStatus(callbackContext);
+        if (action.equals("status")) {
+            checkBTStatus(callbackContext);
             return true;
         } else if (action.equals("list")) {
             listBT(callbackContext);
@@ -177,27 +177,27 @@ public class BluetoothPrinter extends CordovaPlugin {
         return false;
     }
 
-    //This will return the status of BT adapter: true or false
-    boolean checkBTStatus(CallbackContext callbackContext){
-            try {
-                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                if (mBluetoothAdapter.isEnabled()) {
-                     callbackContext.success("true");
+    // This will return the status of BT adapter: true or false
+    boolean checkBTStatus(CallbackContext callbackContext) {
+        try {
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (mBluetoothAdapter.isEnabled()) {
+                callbackContext.success("true");
                 return true;
-                } else {
-                     callbackContext.success("false");
-                    return false;
-                }
-            } catch (Exception e) {
-                String errMsg = e.getMessage();
-                Log.e(LOG_TAG, errMsg);
-                e.printStackTrace();
-                callbackContext.error(errMsg);
+            } else {
+                callbackContext.success("false");
+                return false;
             }
-            return false;
+        } catch (Exception e) {
+            String errMsg = e.getMessage();
+            Log.e(LOG_TAG, errMsg);
+            e.printStackTrace();
+            callbackContext.error(errMsg);
         }
+        return false;
+    }
 
-    //This will return the array list of paired bluetooth printers
+    // This will return the array list of paired bluetooth printers
     void listBT(CallbackContext callbackContext) {
         BluetoothAdapter mBluetoothAdapter = null;
         String errMsg = null;
@@ -218,11 +218,9 @@ public class BluetoothPrinter extends CordovaPlugin {
                 JSONArray json = new JSONArray();
                 for (BluetoothDevice device : pairedDevices) {
                     /*
-                     Hashtable map = new Hashtable();
-                     map.put("type", device.getType());
-                     map.put("address", device.getAddress());
-                     map.put("name", device.getName());
-                     JSONObject jObj = new JSONObject(map);
+                     * Hashtable map = new Hashtable(); map.put("type", device.getType());
+                     * map.put("address", device.getAddress()); map.put("name", device.getName());
+                     * JSONObject jObj = new JSONObject(map);
                      */
                     Log.v(LOG_TAG, "DEVICE getName-> " + device.getName());
                     Log.v(LOG_TAG, "DEVICE getAddress-> " + device.getAddress());
@@ -235,7 +233,7 @@ public class BluetoothPrinter extends CordovaPlugin {
             } else {
                 callbackContext.error("NO BLUETOOTH DEVICE FOUND");
             }
-            //Log.d(LOG_TAG, "Bluetooth Device Found: " + mmDevice.getName());
+            // Log.d(LOG_TAG, "Bluetooth Device Found: " + mmDevice.getName());
         } catch (Exception e) {
             errMsg = e.getMessage();
             Log.e(LOG_TAG, errMsg);
@@ -320,13 +318,9 @@ public class BluetoothPrinter extends CordovaPlugin {
                                         byte[] encodedBytes = new byte[readBufferPosition];
                                         System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                         /*
-                                         final String data = new String(encodedBytes, "US-ASCII");
-                                         readBufferPosition = 0;
-                                         handler.post(new Runnable() {
-                                         public void run() {
-                                         myLabel.setText(data);
-                                         }
-                                         });
+                                         * final String data = new String(encodedBytes, "US-ASCII"); readBufferPosition
+                                         * = 0; handler.post(new Runnable() { public void run() { myLabel.setText(data);
+                                         * } });
                                          */
                                     } else {
                                         readBuffer[readBufferPosition++] = b;
@@ -347,7 +341,7 @@ public class BluetoothPrinter extends CordovaPlugin {
         }
     }
 
-    //Print title formatted
+    // Print title formatted
     boolean printTitle(CallbackContext callbackContext, String msg, Integer size, Integer align) throws IOException {
         try {
             byte[] new_size = selFontSize(size);
@@ -369,63 +363,63 @@ public class BluetoothPrinter extends CordovaPlugin {
         return false;
     }
 
-    //size text
+    // size text
     private static byte[] selFontSize(int size) {
         byte[] char_size = CHAR_SIZE_00;
         switch (size) {
-            case 1:
-                char_size = CHAR_SIZE_01;
-                break;
-            case 8:
-                char_size = CHAR_SIZE_08;
-                break;
-            case 10:
-                char_size = CHAR_SIZE_10;
-                break;
-            case 11:
-                char_size = CHAR_SIZE_11;
-                break;
-            case 20:
-                char_size = CHAR_SIZE_20;
-                break;
-            case 30:
-                char_size = CHAR_SIZE_30;
-                break;
-            case 31:
-                char_size = CHAR_SIZE_31;
-                break;
-            case 51:
-                char_size = CHAR_SIZE_51;
-                break;
-            case 61:
-                char_size = CHAR_SIZE_61;
-                break;
+        case 1:
+            char_size = CHAR_SIZE_01;
+            break;
+        case 8:
+            char_size = CHAR_SIZE_08;
+            break;
+        case 10:
+            char_size = CHAR_SIZE_10;
+            break;
+        case 11:
+            char_size = CHAR_SIZE_11;
+            break;
+        case 20:
+            char_size = CHAR_SIZE_20;
+            break;
+        case 30:
+            char_size = CHAR_SIZE_30;
+            break;
+        case 31:
+            char_size = CHAR_SIZE_31;
+            break;
+        case 51:
+            char_size = CHAR_SIZE_51;
+            break;
+        case 61:
+            char_size = CHAR_SIZE_61;
+            break;
         }
         return char_size;
     }
 
-    //align text
+    // align text
     private static byte[] selAlignTitle(int align) {
         byte[] char_align = ESC_ALIGN_LEFT;
         switch (align) {
-            case 0:
-                char_align = ESC_ALIGN_LEFT;
-                break;
-            case 1:
-                char_align = ESC_ALIGN_CENTER;
-                break;
-            case 2:
-                char_align = ESC_ALIGN_RIGHT;
-                break;
+        case 0:
+            char_align = ESC_ALIGN_LEFT;
+            break;
+        case 1:
+            char_align = ESC_ALIGN_CENTER;
+            break;
+        case 2:
+            char_align = ESC_ALIGN_RIGHT;
+            break;
         }
         return char_align;
     }
 
     private void resetDefaultFontAlign() {
         try {
-            byte[] linefeed = new byte[]{0x0A};
-            byte[] char_padrao = new byte[]{0x1B, 0x21, 0x00};
-            byte[] align_padrao = new byte[]{0x1B, 0x61, 0x00};
+            byte[] linefeed = new byte[] { 0x0A };
+            byte[] char_padrao = new byte[] { 0x1B, 0x21, 0x00 };
+            byte[] align_padrao = new byte[] { 0x1B, 0x61, 0x00 };
 
             mmOutputStream.write(linefeed);
             mmOutputStream.write(char_padrao);
@@ -440,17 +434,17 @@ public class BluetoothPrinter extends CordovaPlugin {
 
     boolean printText(CallbackContext callbackContext, String msg) throws IOException {
         try {
-            //CANCEL CHINESE CHARACTER
-//            mmOutputStream.write(0x1C);
-//            mmOutputStream.write(0x2E);
-//
-//            mmOutputStream.write(0x1B);
-//            mmOutputStream.write(0x74);
-//            mmOutputStream.write(0x10);
-            //-------------------------
-            //Select character code table (ESC t n) - n = 16(0x10) for WPC1252
+            // CANCEL CHINESE CHARACTER
+            // mmOutputStream.write(0x1C);
+            // mmOutputStream.write(0x2E);
+            //
+            // mmOutputStream.write(0x1B);
+            // mmOutputStream.write(0x74);
+            // mmOutputStream.write(0x10);
+            // -------------------------
+            // Select character code table (ESC t n) - n = 16(0x10) for WPC1252
             mmOutputStream.write(msg.getBytes());
-//            mmOutputStream.write(msg.getBytes("iso-8859-1"));
+            // mmOutputStream.write(msg.getBytes("iso-8859-1"));
             // tell the user data were sent
             Log.d(LOG_TAG, "PRINT TEXT SEND -> " + msg);
             callbackContext.success("PRINT TEXT SEND");
@@ -465,10 +459,11 @@ public class BluetoothPrinter extends CordovaPlugin {
         return false;
     }
 
-    //This will send data to bluetooth printer
-    boolean printTextSizeAlign(CallbackContext callbackContext, String msg, Integer size, Integer align) throws IOException {
+    // This will send data to bluetooth printer
+    boolean printTextSizeAlign(CallbackContext callbackContext, String msg, Integer size, Integer align)
+            throws IOException {
         try {
-            //set unicode
+            // set unicode
             byte[] new_size = selFontSize(size);
             byte[] new_align = selAlignTitle(align);
             mmOutputStream.write(new_size);
@@ -521,7 +516,7 @@ public class BluetoothPrinter extends CordovaPlugin {
         return false;
     }
 
-    //send url from image
+    // send url from image
     boolean printImageUrl(CallbackContext callbackContext, String msg, Integer align) throws IOException {
         try {
             Log.d(LOG_TAG, "Preparar para impressao, passando o caminho da imagem -> " + msg);
@@ -531,15 +526,15 @@ public class BluetoothPrinter extends CordovaPlugin {
                 byte[] command = decodeBitmapUrl(bmp);
                 Log.d(LOG_TAG, "SWITCH ALIGN -> " + align);
                 switch (align) {
-                    case 0:
-                        printLeftImage(command);
-                        break;
-                    case 1:
-                        printCenterImage(command);
-                        break;
-                    case 2:
-                        printRightImage(command);
-                        break;
+                case 0:
+                    printLeftImage(command);
+                    break;
+                case 1:
+                    printCenterImage(command);
+                    break;
+                case 2:
+                    printRightImage(command);
+                    break;
                 }
             } else {
                 Log.d(LOG_TAG, "PRINT PHOTO ERROR THE FILE ISN'T EXISTS");
@@ -551,7 +546,7 @@ public class BluetoothPrinter extends CordovaPlugin {
         return false;
     }
 
-    //print image align left
+    // print image align left
     public void printLeftImage(byte[] msg) {
         try {
             Log.d(LOG_TAG, "PRINT LEFT IMAGE");
@@ -563,13 +558,13 @@ public class BluetoothPrinter extends CordovaPlugin {
         }
     }
 
-    //print image align center
+    // print image align center
     public void printCenterImage(byte[] msg) {
         try {
             Log.d(LOG_TAG, "PRINT CENTER IMAGE");
             mmOutputStream.write(ESC_ALIGN_CENTER);
             mmOutputStream.write(msg);
-            //return to left position
+            // return to left position
             mmOutputStream.write(ESC_ALIGN_LEFT);
         } catch (IOException e) {
             e.printStackTrace();
@@ -577,13 +572,13 @@ public class BluetoothPrinter extends CordovaPlugin {
         }
     }
 
-    //print image align right
+    // print image align right
     public void printRightImage(byte[] msg) {
         try {
             Log.d(LOG_TAG, "PRINT RIGHT IMAGE");
             mmOutputStream.write(ESC_ALIGN_RIGHT);
             mmOutputStream.write(msg);
-            //return to left position
+            // return to left position
             mmOutputStream.write(ESC_ALIGN_LEFT);
         } catch (IOException e) {
             e.printStackTrace();
@@ -591,7 +586,7 @@ public class BluetoothPrinter extends CordovaPlugin {
         }
     }
 
-    //This will send data to bluetooth printer
+    // This will send data to bluetooth printer
     boolean printBase64(CallbackContext callbackContext, String msg, Integer align) throws IOException {
         try {
 
@@ -609,21 +604,21 @@ public class BluetoothPrinter extends CordovaPlugin {
 
             byte[] bt = decodeBitmapBase64(bitmap);
 
-            //not work
+            // not work
             Log.d(LOG_TAG, "SWITCH ALIGN BASE64 -> " + align);
             switch (align) {
-                case 0:
-                    mmOutputStream.write(ESC_ALIGN_LEFT);
-                    mmOutputStream.write(bt);
-                    break;
-                case 1:
-                    mmOutputStream.write(ESC_ALIGN_CENTER);
-                    mmOutputStream.write(bt);
-                    break;
-                case 2:
-                    mmOutputStream.write(ESC_ALIGN_RIGHT);
-                    mmOutputStream.write(bt);
-                    break;
+            case 0:
+                mmOutputStream.write(ESC_ALIGN_LEFT);
+                mmOutputStream.write(bt);
+                break;
+            case 1:
+                mmOutputStream.write(ESC_ALIGN_CENTER);
+                mmOutputStream.write(bt);
+                break;
+            case 2:
+                mmOutputStream.write(ESC_ALIGN_RIGHT);
+                mmOutputStream.write(bt);
+                break;
             }
             // tell the user data were sent
             Log.d(LOG_TAG, "PRINT BASE64 SEND");
@@ -641,7 +636,7 @@ public class BluetoothPrinter extends CordovaPlugin {
 
     boolean printQRCode(CallbackContext callbackContext, String str) throws IOException {
         try {
-            //In development
+            // In development
             mmOutputStream.write(str.getBytes());
             Log.d(LOG_TAG, "PRINT QRCODE SENT");
             callbackContext.success("PRINT QRCODE SENT");
@@ -655,7 +650,7 @@ public class BluetoothPrinter extends CordovaPlugin {
         return false;
     }
 
-    //New implementation
+    // New implementation
     private static Bitmap resizeImage(Bitmap bitmap, int w, int h) {
         Bitmap BitmapOrg = bitmap;
         int width = BitmapOrg.getWidth();
@@ -666,8 +661,7 @@ public class BluetoothPrinter extends CordovaPlugin {
             float scaleHeight = ((float) h) / height + 24;
             Matrix matrix = new Matrix();
             matrix.postScale(scaleWidth, scaleWidth);
-            Bitmap resizedBitmap = Bitmap.createBitmap(BitmapOrg, 0, 0, width,
-                    height, matrix, true);
+            Bitmap resizedBitmap = Bitmap.createBitmap(BitmapOrg, 0, 0, width, height, matrix, true);
             return resizedBitmap;
         } else {
             Bitmap resizedBitmap = Bitmap.createBitmap(w, height + 24, Config.RGB_565);
@@ -682,7 +676,7 @@ public class BluetoothPrinter extends CordovaPlugin {
     public static byte[] decodeBitmapBase64(Bitmap bmp) {
         int bmpWidth = bmp.getWidth();
         int bmpHeight = bmp.getHeight();
-        List<String> list = new ArrayList<String>(); //binaryString list
+        List<String> list = new ArrayList<String>(); // binaryString list
         StringBuffer sb;
         int bitLen = bmpWidth / 8;
         int zeroCount = bmpWidth % 8;
@@ -718,8 +712,8 @@ public class BluetoothPrinter extends CordovaPlugin {
         List<String> bmpHexList = binaryListToHexStringList(list);
         String commandHexString = "1D763000";
 
-        //construct xL and xH
-        //there are 8 pixels per byte. In case of modulo: add 1 to compensate.
+        // construct xL and xH
+        // there are 8 pixels per byte. In case of modulo: add 1 to compensate.
         bmpWidth = bmpWidth % 8 == 0 ? bmpWidth / 8 : (bmpWidth / 8 + 1);
         int xL = bmpWidth % 256;
         int xH = (bmpWidth - xL) / 256;
@@ -734,7 +728,7 @@ public class BluetoothPrinter extends CordovaPlugin {
         }
         String widthHexString = xLHex + xHHex;
 
-        //construct yL and yH
+        // construct yL and yH
         int yL = bmpHeight % 256;
         int yH = (bmpHeight - yL) / 256;
 
@@ -759,7 +753,7 @@ public class BluetoothPrinter extends CordovaPlugin {
         int bmpWidth = bmp.getWidth();
         int bmpHeight = bmp.getHeight();
 
-        List<String> list = new ArrayList<String>(); //binaryString list
+        List<String> list = new ArrayList<String>(); // binaryString list
         StringBuffer sb;
 
         int bitLen = bmpWidth / 8;
@@ -796,9 +790,7 @@ public class BluetoothPrinter extends CordovaPlugin {
 
         List<String> bmpHexList = binaryListToHexStringList(list);
         String commandHexString = "1D763000";
-        String widthHexString = Integer
-                .toHexString(bmpWidth % 8 == 0 ? bmpWidth / 8
-                        : (bmpWidth / 8 + 1));
+        String widthHexString = Integer.toHexString(bmpWidth % 8 == 0 ? bmpWidth / 8 : (bmpWidth / 8 + 1));
         if (widthHexString.length() > 2) {
             Log.e("decodeBitmap error", " width is too large");
             return null;
@@ -859,9 +851,8 @@ public class BluetoothPrinter extends CordovaPlugin {
 
     private static String hexStr = "0123456789ABCDEF";
 
-    private static String[] binaryArray = {"0000", "0001", "0010", "0011",
-        "0100", "0101", "0110", "0111", "1000", "1001", "1010", "1011",
-        "1100", "1101", "1110", "1111"};
+    private static String[] binaryArray = { "0000", "0001", "0010", "0011", "0100", "0101", "0110", "0111", "1000",
+            "1001", "1010", "1011", "1100", "1101", "1110", "1111" };
 
     public static byte[] hexList2Byte(List<String> list) {
         List<byte[]> commandList = new ArrayList<byte[]>();
@@ -873,7 +864,7 @@ public class BluetoothPrinter extends CordovaPlugin {
         return bytes;
     }
 
-    //New implementation, change old
+    // New implementation, change old
     public static byte[] hexStringToBytes(String hexString) {
         if (hexString == null || hexString.equals("")) {
             return null;
