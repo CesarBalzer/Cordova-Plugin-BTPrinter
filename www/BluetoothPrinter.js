@@ -13,6 +13,9 @@ var BTPrinter = {
     disconnect: function (fnSuccess, fnError) {
         exec(fnSuccess, fnError, "BluetoothPrinter", "disconnect", []);
     },
+    setEncoding: function (fnSuccess, fnError, str) {
+        exec(fnSuccess, fnError, "BluetoothPrinter", "setEncoding", [str]);
+    },
     printText: function (fnSuccess, fnError, str) {
         exec(fnSuccess, fnError, "BluetoothPrinter", "printText", [str]);
     },
