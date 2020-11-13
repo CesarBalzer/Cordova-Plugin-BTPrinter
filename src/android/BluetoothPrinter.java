@@ -48,6 +48,7 @@ public class BluetoothPrinter extends CordovaPlugin {
     int counter;
     volatile boolean stopWorker;
     Bitmap bitmap;
+    String encoding = "iso-8859-1";
 
     public static final byte LINE_FEED = 0x0A;
     public static final byte[] CODIFICATION = new byte[] { 0x1b, 0x4D, 0x01 };
@@ -103,6 +104,9 @@ public class BluetoothPrinter extends CordovaPlugin {
                 Log.e(LOG_TAG, e.getMessage());
                 e.printStackTrace();
             }
+            return true;
+        } else if (action.equals("setEncoding")) {
+            encoding = args.getString(0);
             return true;
         } else if (action.equals("printText")) {
             try {
@@ -348,7 +352,7 @@ public class BluetoothPrinter extends CordovaPlugin {
             byte[] new_align = selAlignTitle(align);
             mmOutputStream.write(new_size);
             mmOutputStream.write(new_align);
-            mmOutputStream.write(msg.getBytes("iso-8859-1"));
+            mmOutputStream.write(msg.getBytes(encoding));
             resetDefaultFontAlign();
             Log.d(LOG_TAG, "PRINT TITLE SEND " + msg);
             callbackContext.success("PRINT TITLE SEND" + msg);
@@ -443,8 +447,7 @@ public class BluetoothPrinter extends CordovaPlugin {
             // mmOutputStream.write(0x10);
             // -------------------------
             // Select character code table (ESC t n) - n = 16(0x10) for WPC1252
-            mmOutputStream.write(msg.getBytes());
-            // mmOutputStream.write(msg.getBytes("iso-8859-1"));
+            mmOutputStream.write(msg.getBytes(encoding));
             // tell the user data were sent
             Log.d(LOG_TAG, "PRINT TEXT SEND -> " + msg);
             callbackContext.success("PRINT TEXT SEND");
@@ -468,7 +471,7 @@ public class BluetoothPrinter extends CordovaPlugin {
             byte[] new_align = selAlignTitle(align);
             mmOutputStream.write(new_size);
             mmOutputStream.write(new_align);
-            mmOutputStream.write(msg.getBytes("iso-8859-1"));
+            mmOutputStream.write(msg.getBytes(encoding));
             resetDefaultFontAlign();
             Log.d(LOG_TAG, "PRINT TEXT SENT " + msg);
             callbackContext.success("PRINT TEXT SENT");
