@@ -100,6 +100,19 @@ setTimeout(function(){
 }, 1500);
 ```
 
+### Set text encoding
+
+```
+BTPrinter.setEncoding(function(data){
+    console.log("Success");
+    console.log(data)
+},function(err){
+    console.log("Error");
+    console.log(err)
+}, "ISO-8859-1")
+```
+Refer to printer's manual for supported encodings and codepages.
+
 ### Print simple text
 
 ```
