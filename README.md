@@ -72,6 +72,18 @@ BTPrinter.connect(function(data){
 }, "PrinterName");
 ```
 
+### Check if printer is connected
+
+```
+BTPrinter.connected(function(data){
+	console.log("Success");
+	console.log(data) // connected: true or false
+},function(err){
+	console.log("Error");
+	console.log(err);
+});
+```
+
 ### Disconnect printer
 
 ```
