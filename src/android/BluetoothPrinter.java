@@ -97,6 +97,9 @@ public class BluetoothPrinter extends CordovaPlugin {
                 callbackContext.error("BLUETOOTH DEVICE NOT FOUND: " + name);
             }
             return true;
+        } else if (action.equals("connected")) {
+            connected(callbackContext);
+            return true;
         } else if (action.equals("disconnect")) {
             try {
                 disconnectBT(callbackContext);
@@ -289,6 +292,28 @@ public class BluetoothPrinter extends CordovaPlugin {
             Log.d(LOG_TAG, "BLUETOOTH OPENED: " + mmDevice.getName());
             callbackContext.success("BLUETOOTH OPENED: " + mmDevice.getName());
             return true;
+        } catch (Exception e) {
+            String errMsg = e.getMessage();
+            Log.e(LOG_TAG, errMsg);
+            e.printStackTrace();
+            callbackContext.error(errMsg);
+        }
+        return false;
+    }
+
+    // Check if printer is already connected
+    boolean connected(CallbackContext callbackContext) {
+        try {
+            if (mmSocket == null) {
+                callbackContext.success("false");
+                return false;
+            } else if (mmSocket.isConnected()) {
+                callbackContext.success("true");
+                return true;
+            } else {
+                callbackContext.success("false");
+                return false;
+            }
         } catch (Exception e) {
             String errMsg = e.getMessage();
             Log.e(LOG_TAG, errMsg);
