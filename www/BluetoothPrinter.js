@@ -10,6 +10,9 @@ var BTPrinter = {
     connect: function (fnSuccess, fnError, name) {
         exec(fnSuccess, fnError, "BluetoothPrinter", "connect", [name]);
     },
+    connected: function (fnSuccess, fnError) {
+        exec(fnSuccess, fnError, "BluetoothPrinter", "connected", []);
+    },
     disconnect: function (fnSuccess, fnError) {
         exec(fnSuccess, fnError, "BluetoothPrinter", "disconnect", []);
     },
