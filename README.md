@@ -6,7 +6,7 @@ This code is being adapted from a fork of [Cordova-Plugin-Bluetooth-Printer](htt
 
 Suggestions, critiques are welcome, participate and send a commit helping to improve the plugin for the community.
 
-Thank's!
+Thanks!
 
 ## Support
 
@@ -17,6 +17,7 @@ Thank's!
 - [ Print title with size and align](#Print-title-with-size-and-align)
 - [ POS printing](#POS-printing)
 - [ Print QRCode ](#Print-QRCode)
+- [ Print Barcode ](#Print-Barcode)
 
 ## Install
 
@@ -28,29 +29,34 @@ cordova plugin add https://github.com/CesarBalzer/Cordova-Plugin-BTPrinter.git
 
 ## Usage
 
-Get list of paired bluetooth printers
+Get list of paired bluetooth devices, including printers, if any:
 
-```
+```javascript
 BTPrinter.list(function(data){
         console.log("Success");
-        console.log(data); //list of printer in data array
+        console.log(data); // paired bluetooth devices array
     },function(err){
         console.log("Error");
         console.log(err);
     });
 ```
 
-Return:
+Returns an array with the format:
 
 ```
-data[0] Printer name
-data[1] Printer address
-data[2] Printer type
+data[0] = Device 1 name
+data[1] = Device 1 MAC address
+data[2] = Device 1 type
+data[3] = Device 2 name
+data[4] = Device 2 MAC address
+data[5] = Device 2 type
+...
 ```
+Where device **name** is the required string to connect to the printer.
 
 ### Check Bluetooth status
 
-```
+```javascript
 BTPrinter.status(function(data){
 	console.log("Success");
 	console.log(data) // bt status: true or false
@@ -62,7 +68,7 @@ BTPrinter.status(function(data){
 
 ### Connect printer
 
-```
+```javascript
 BTPrinter.connect(function(data){
 	console.log("Success");
 	console.log(data)
@@ -74,7 +80,7 @@ BTPrinter.connect(function(data){
 
 ### Check if printer is connected
 
-```
+```javascript
 BTPrinter.connected(function(data){
 	console.log("Success");
 	console.log(data) // connected: true or false
@@ -86,7 +92,7 @@ BTPrinter.connected(function(data){
 
 ### Disconnect printer
 
-```
+```javascript
 BTPrinter.disconnect(function(data){
 	console.log("Success");
 	console.log(data)
@@ -100,7 +106,7 @@ BTPrinter.disconnect(function(data){
 
 I thought it best to create the function within a timeout
 
-```
+```javascript
 setTimeout(function(){
     BTPrinter.disconnect(function(data){
 	console.log("Success");
@@ -114,7 +120,7 @@ setTimeout(function(){
 
 ### Set text encoding
 
-```
+```javascript
 BTPrinter.setEncoding(function(data){
     console.log("Success");
     console.log(data)
@@ -127,7 +133,7 @@ Refer to printer's manual for supported encodings and codepages.
 
 ### Print simple text
 
-```
+```javascript
 BTPrinter.printText(function(data){
     console.log("Success");
     console.log(data)
@@ -139,7 +145,7 @@ BTPrinter.printText(function(data){
 
 ### Print text with size and align
 
-```
+```javascript
 BTPrinter.printTextSizeAlign(function(data){
     console.log("Success");
     console.log(data)
@@ -151,7 +157,7 @@ BTPrinter.printTextSizeAlign(function(data){
 
 ### Print image from path with align
 
-```
+```javascript
 BTPrinter.printImageUrl(function(data){
     console.log("Success");
     console.log(data);
@@ -167,7 +173,7 @@ In android tests with /storage/emulated/0/Pictures/myfolder/myimage.jpg - size m
 
 - with align still in tests not work alignment)
 
-```
+```javascript
 BTPrinter.printBase64(function(data){
     console.log("Success");
     console.log(data);
@@ -181,7 +187,7 @@ BTPrinter.printBase64(function(data){
 
 - with align still in tests not work alignment)
 
-```
+```javascript
 BTPrinter.printTitle(function(data){
     console.log("Success");
     console.log(data);
@@ -193,7 +199,7 @@ BTPrinter.printTitle(function(data){
 
 ### POS printing
 
-```
+```javascript
 BTPrinter.printPOSCommand(function(data){
     console.log("Success");
     console.log(data)
@@ -205,43 +211,57 @@ BTPrinter.printPOSCommand(function(data){
 
 ### Print QRCode
 
-- not working
-
-```
+```javascript
+var data = "https://github.com/CesarBalzer/Cordova-Plugin-BTPrinter";
+var align = 1; /* 0, 1, 2 */
+var model = 49; /* https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=140 */
+var size = 32; /* https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=141 */
+var eclevel = 50; /* https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=142 */
 BTPrinter.printQRCode(function(data){
     console.log("Success");
-    console.log(data)
+    console.log(data);
 },function(err){
     console.log("Error");
-    console.log(err)
-}, "https://github.com/CesarBalzer/Cordova-Plugin-BTPrinter");//string to qrcode
+    console.log(err);
+}, data, align, model, size, eclevel);
 ```
 
-The best option I found was to use this [albertorcf](https://github.com/srehanuddin/Cordova-Plugin-Bluetooth-Printer/issues/24#issue-201362448):
+### Print Barcode
 
+```javascript
+var system = 0; /* Barcode system, defined as "m" at https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=128 */
+var data = "012345678901"; /* Barcode data, according to barcode system */
+var align = 1; /* 0, 1, 2 */
+var position = 2; /* Text position: https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=125 */;
+var font = 0; /* Font for HRI characters: https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=126 */
+var height = 64; /* Set barcode height: https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=127*/
+BTPrinter.printBarcode(function(data){
+    console.log("Success");
+    console.log(data);
+},function(err){
+    console.log("Error");
+    console.log(err);
+}, system, data, align, position, font, height);
 ```
-    var justify_center = '\x1B\x61\x01';
-    var justify_left   = '\x1B\x61\x00';
-    var qr_model       = '\x32';          // 31 or 32
-    var qr_size        = '\x08';          // size
-    var qr_eclevel     = '\x33';          // error correction level (30, 31, 32, 33 - higher)
-    var qr_data        = 'https://github.com/CesarBalzer/Cordova-Plugin-BTPrinter';
-    var qr_pL          = String.fromCharCode((qr_data.length + 3) % 256);
-    var qr_pH          = String.fromCharCode((qr_data.length + 3) / 256);
-    //
-    BTPrinter.printText(null,null, justify_center +
-       '\x1D\x28\x6B\x04\x00\x31\x41' + qr_model + '\x00' +        // Select the model
-       '\x1D\x28\x6B\x03\x00\x31\x43' + qr_size +                  // Size of the model
-       '\x1D\x28\x6B\x03\x00\x31\x45' + qr_eclevel +               // Set n for error correction
-       '\x1D\x28\x6B' + qr_pL + qr_pH + '\x31\x50\x30' + qr_data + // Store data
-       '\x1D\x28\x6B\x03\x00\x31\x51\x30' +                        // Print
-       '\n\n\n' +
-       justify_left,'1','0');
+
+Notice that UPC-A, UPC-E, EAN13 and ITF accepts only:
+```
+Numbers 0-9
+```
+Sending other characters will return a plugin error with the proper description.
+
+CODE39 accepts:
+```
+0 – 9, A – Z, SP, $, %, *, +, -, ., /
+```
+CODABAR accepts:
+```
+0 – 9, A – D, a – d, $, +, −, ., /, :
 ```
 
 ## Size options
 
-```
+```javascript
      0 = CHAR_SIZE_01 // equivalent 0x1B, 0x21, 0x00
      8 = CHAR_SIZE_08 // equivalent 0x1B, 0x21, 0x08
     10 = CHAR_SIZE_10 // equivalent 0x1B, 0x21, 0x10
@@ -255,8 +275,21 @@ The best option I found was to use this [albertorcf](https://github.com/srehanud
 
 ## Align options
 
-```
+```javascript
     0 = ESC_ALIGN_LEFT // equivalent 0x1B, 0x61, 0x00
     1 = ESC_ALIGN_CENTER // equivalent 0x1B, 0x61, 0x01
     2 = ESC_ALIGN_RIGHT // equivalent 0x1B, 0x61, 0x02
 ```
+
+## Plugin Demo App
+
+To test most of the plugin's functions, you can use the free [BTPrinter Plugin Demo app](https://www.andreszsogon.com/cordova-bluetooth-printer-plugin-demo-app/) by Andrés Zsögön, and inspect the source code for more details.
+
+[![DemoApp](https://www.andreszsogon.com/wp-content/uploads/printer-btplugin-demo-app-1.png)](https://www.andreszsogon.com/cordova-bluetooth-printer-plugin-demo-app/)
+[![DemoApp](https://www.andreszsogon.com/wp-content/uploads/printer-btplugin-demo-app-2.png)](https://www.andreszsogon.com/cordova-bluetooth-printer-plugin-demo-app/)
+
+## Sample receipt
+
+The following sample receipt was printed with the plugin demo app using a generic portable bluetooth printer:
+
+![Receipt](https://www.andreszsogon.com/wp-content/uploads/btplugin-demo-app.png)
