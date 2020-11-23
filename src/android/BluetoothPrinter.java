@@ -29,8 +29,10 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Bitmap.Config;
+import android.text.TextUtils;
 import android.util.Xml.Encoding;
 import android.util.Base64;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +77,14 @@ public class BluetoothPrinter extends CordovaPlugin {
     public static final byte[] BOLD_ON = { 0x1b, 0x45, 0x01 }; // Bold font ON
     public static final byte[] FONT_A = { 0x1b, 0x4d, 0x00 }; // Font type A
     public static final byte[] FONT_B = { 0x1b, 0x4d, 0x01 }; // Font type B
+
+	public static final byte[] BARCODE_UPC_A = { 0x1D, 0x6B, 0x00 };
+	public static final byte[] BARCODE_UPC_E = { 0x1D, 0x6B, 0x01 };
+	public static final byte[] BARCODE_EAN13 = { 0x1D, 0x6B, 0x02 };
+	public static final byte[] BARCODE_EAN8 = { 0x1D, 0x6B, 0x03 };
+	public static final byte[] BARCODE_CODE39 = { 0x1D, 0x6B, 0x04 };
+	public static final byte[] BARCODE_ITF = { 0x1D, 0x6B, 0x05 };
+	public static final byte[] BARCODE_CODABAR = { 0x1D, 0x6B, 0x06 };
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -173,14 +183,32 @@ public class BluetoothPrinter extends CordovaPlugin {
             return true;
         } else if (action.equals("printQRCode")) {
             try {
-                String msg = args.getString(0);
-                printQRCode(callbackContext, msg);
+                String data = args.getString(0);
+				Integer align = Integer.parseInt(args.getString(1));
+				Integer model = Integer.parseInt(args.getString(2));
+				Integer size = Integer.parseInt(args.getString(3));
+				Integer eclevel = Integer.parseInt(args.getString(4));
+				printQRCode(callbackContext, data, align, model, size, eclevel);
             } catch (IOException e) {
                 Log.e(LOG_TAG, e.getMessage());
                 e.printStackTrace();
             }
             return true;
-        }
+        } else if (action.equals("printBarcode")) {
+            try {
+                Integer system = Integer.parseInt(args.getString(0));
+				String data = args.getString(1);
+				Integer align = Integer.parseInt(args.getString(2));
+                Integer position = Integer.parseInt(args.getString(3));
+                Integer font = Integer.parseInt(args.getString(4));
+                Integer height = Integer.parseInt(args.getString(5));
+				printBarcode(callbackContext, system, data, align, position, font, height);
+            } catch (IOException e) {
+                Log.e(LOG_TAG, e.getMessage());
+                e.printStackTrace();
+            }
+            return true;
+		}
         return false;
     }
 
@@ -662,12 +690,161 @@ public class BluetoothPrinter extends CordovaPlugin {
         return false;
     }
 
-    boolean printQRCode(CallbackContext callbackContext, String str) throws IOException {
+    boolean printQRCode(CallbackContext callbackContext, String data, int align, int model, int size, int eclevel) throws IOException {
         try {
-            // In development
-            mmOutputStream.write(str.getBytes());
+            // Print QR code
+			final String qr_pL = Character.toString((char)((data.length() + 3) % 256));
+			final String qr_pH = Character.toString((char)((data.length() + 3) / 256));
+
+			// Set alignment
+			byte[] new_align = selAlignTitle(align);
+            mmOutputStream.write(new_align);
+
+			// Set QR model - https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=140
+			byte qr_model = Integer.toHexString(model).getBytes()[0];
+			mmOutputStream.write(new byte[]{ 0x1D, 0x28, 0x6B, 0x04, 0x00, 0x31, 0x41, qr_model, 0x00 });
+
+			// Set QR size - https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=141
+			byte qr_size = Integer.toHexString(size).getBytes()[0];
+			mmOutputStream.write(new byte[]{ 0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, qr_size });
+
+			// Set error correction level - https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=142
+			byte qr_eclevel = Integer.toHexString(eclevel).getBytes()[0];
+			mmOutputStream.write(new byte[]{ 0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x45, qr_eclevel });
+
+			// Store the data in the symbol storage area - https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=143
+			mmOutputStream.write(new byte[]{ 0x1D, 0x28, 0x6B });
+			mmOutputStream.write(qr_pL.getBytes());
+			mmOutputStream.write(qr_pH.getBytes());
+			mmOutputStream.write(new byte[]{ 0x31, 0x50, 0x30 });
+			mmOutputStream.write(data.getBytes());
+
+			// Print the symbol data in the symbol storage area
+			mmOutputStream.write(new byte[]{ 0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x51, 0x30 });
+
+			// Reset align
+			mmOutputStream.write(ESC_ALIGN_LEFT);
+
             Log.d(LOG_TAG, "PRINT QRCODE SENT");
             callbackContext.success("PRINT QRCODE SENT");
+            return true;
+        } catch (Exception e) {
+            String errMsg = e.getMessage();
+            Log.e(LOG_TAG, errMsg);
+            e.printStackTrace();
+            callbackContext.error(errMsg);
+        }
+        return false;
+    }
+
+    boolean printBarcode(CallbackContext callbackContext, int system, String data, int align, int position, int font, int height) throws IOException {
+        try {
+			// Validate barcode data
+			byte[] bc_system = null;
+			switch (system) {
+				case 0:
+					Integer[] valid_sizes_0 = { 11, 12 };
+					if (!TextUtils.isDigitsOnly(data)) {
+						callbackContext.error("Invalid data type: UPC-A expects numbers 0-9");
+						return false;
+					} else if (!Arrays.asList(valid_sizes_0).contains(data.length())) {
+						callbackContext.error("Invalid data length: UPC-A requires 11-12 characters");
+						return false;
+					}else{
+						bc_system = BARCODE_UPC_A;
+					}
+					break;
+				case 1:
+					Integer[] valid_sizes_1 = { 6, 7, 8, 11, 12 };
+					if (!TextUtils.isDigitsOnly(data)) {
+						callbackContext.error("Invalid data type: UPC-E expects numbers 0-9");
+						return false;
+					} else if (!Arrays.asList(valid_sizes_1).contains(data.length())) {
+						callbackContext.error("Invalid data length: UPC-E requires 6-8 or 11-12 characters");
+						return false;
+					}else{
+						bc_system = BARCODE_UPC_E;
+					}
+					break;
+				case 2:
+					Integer[] valid_sizes_2 = { 12, 13 };
+					if (!TextUtils.isDigitsOnly(data)) {
+						callbackContext.error("Invalid data type: EAN13 expects numbers 0-9");
+						return false;
+					} else if (!Arrays.asList(valid_sizes_2).contains(data.length())) {
+						callbackContext.error("Invalid data length: EAN13 requires 12-13 characters");
+						return false;
+					}else{
+						bc_system = BARCODE_EAN13;
+					}
+					break;
+				case 3:
+					Integer[] valid_sizes_3 = { 7, 8 };
+					if (!TextUtils.isDigitsOnly(data)) {
+						callbackContext.error("Invalid data type: EAN8 expects numbers 0-9");
+						return false;
+					} else if (!Arrays.asList(valid_sizes_3).contains(data.length())) {
+						callbackContext.error("Invalid data length: EAN8 requires 7-8 characters");
+						return false;
+					}else{
+						bc_system = BARCODE_EAN8;
+					}
+					break;
+				case 4:
+					if (data.length() > 255) {
+						callbackContext.error("Data length too long for CODE39");
+						return false;
+					}else{
+						bc_system = BARCODE_CODE39;
+					}
+					break;
+				case 5:
+					if (!TextUtils.isDigitsOnly(data)) {
+						callbackContext.error("Invalid data type: ITF expects numbers 0-9");
+						return false;
+					} else if (data.length() < 2) {
+						callbackContext.error("Invalid data length: ITF requires 2+ characters");
+						return false;
+					}else{
+						bc_system = BARCODE_ITF;
+					}
+					break;
+				case 6:
+					if (data.length() < 2) {
+						callbackContext.error("Invalid data length: CODABAR requires 2+ characters");
+						return false;
+					}else{
+						bc_system = BARCODE_CODABAR;
+					}
+					break;
+			}
+
+			// Set alignment
+			byte[] new_align = selAlignTitle(align);
+            mmOutputStream.write(new_align);
+
+			// Select print position of HRI characters
+			byte bc_position = Integer.toHexString(position).getBytes()[0];
+			mmOutputStream.write(new byte[]{ 0x1D, 0x48, bc_position });
+
+			// Select font for HRI characters
+			byte bc_font = Integer.toHexString(font).getBytes()[0];
+			mmOutputStream.write(new byte[]{ 0x1D, 0x66, bc_font });
+
+			// Set barcode height
+			byte bc_height = Integer.toHexString(height).getBytes()[0];
+			mmOutputStream.write(new byte[]{ 0x1D, 0x68, bc_height });
+
+			// Set barcode system and print
+			mmOutputStream.write(bc_system);
+			mmOutputStream.write(data.getBytes());
+			mmOutputStream.write(0x00);
+
+			// Reset align
+			mmOutputStream.write(ESC_ALIGN_LEFT);
+
+            Log.d(LOG_TAG, "PRINT BARCODE SENT");
+            callbackContext.success("PRINT BARCODE SENT");
             return true;
         } catch (Exception e) {
             String errMsg = e.getMessage();
