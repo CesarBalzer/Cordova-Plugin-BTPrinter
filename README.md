@@ -262,11 +262,12 @@ CODABAR accepts:
 ## Size options
 
 ```javascript
-     0 = CHAR_SIZE_01 // equivalent 0x1B, 0x21, 0x00
-     8 = CHAR_SIZE_08 // equivalent 0x1B, 0x21, 0x08
-    10 = CHAR_SIZE_10 // equivalent 0x1B, 0x21, 0x10
-    11 = CHAR_SIZE_11 // equivalent 0x1B, 0x21, 0x11
-    20 = CHAR_SIZE_20 // equivalent 0x1B, 0x21, 0x20
+     0 = CHAR_SIZE_00 // equivalent 0x1B, 0x21, 0x00 : Normal size
+     1 = CHAR_SIZE_01 // equivalent 0x1B, 0x21, 0x01 : Reduzided width
+     8 = CHAR_SIZE_08 // equivalent 0x1B, 0x21, 0x08 : bold normal size
+    10 = CHAR_SIZE_10 // equivalent 0x1B, 0x21, 0x10 : Double height size
+    11 = CHAR_SIZE_11 // equivalent 0x1B, 0x21, 0x11 : Reduzided Double height size
+    20 = CHAR_SIZE_20 // equivalent 0x1B, 0x21, 0x20 : Double width size
     30 = CHAR_SIZE_30 // equivalent 0x1B, 0x21, 0x30
     31 = CHAR_SIZE_31 // equivalent 0x1B, 0x21, 0x31
     51 = CHAR_SIZE_51 // equivalent 0x1B, 0x21, 0x51
