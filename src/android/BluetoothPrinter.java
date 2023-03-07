@@ -36,6 +36,9 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.PermissionChecker;
+
 public class BluetoothPrinter extends CordovaPlugin {
 
     private static final String LOG_TAG = "BluetoothPrinter";
