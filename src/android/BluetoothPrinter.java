@@ -89,6 +89,7 @@ public class BluetoothPrinter extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("status")) {
+	    if (PermissionChecker.checkSelfPermission(this.cordova.getContext(), Manifest.permission.BLUETOOTH_SCAN) != PermissionChecker.PERMISSION_GRANTED) {  ActivityCompat.requestPermissions(this.cordova.getActivity(),    new String[] { android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT }, 1);}
             checkBTStatus(callbackContext);
             return true;
         } else if (action.equals("list")) {
@@ -108,7 +109,7 @@ public class BluetoothPrinter extends CordovaPlugin {
             }
             return true;
         } else if (action.equals("connected")) {
-            connected(callbackContext);
+	    connected(callbackContext);
             return true;
         } else if (action.equals("disconnect")) {
             try {
