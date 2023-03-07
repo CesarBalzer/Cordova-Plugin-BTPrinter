@@ -36,6 +36,9 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.PermissionChecker;
+
 public class BluetoothPrinter extends CordovaPlugin {
 
     private static final String LOG_TAG = "BluetoothPrinter";
@@ -86,9 +89,18 @@ public class BluetoothPrinter extends CordovaPlugin {
 	public static final byte[] BARCODE_ITF = { 0x1D, 0x6B, 0x05 };
 	public static final byte[] BARCODE_CODABAR = { 0x1D, 0x6B, 0x06 };
 
+    public static final int REQUEST_BLUETOOTH_PERMISSION = 1;
+
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("status")) {
+	        if (PermissionChecker.checkSelfPermission(this.cordova.getContext(), android.Manifest.permission.BLUETOOTH_SCAN) != PermissionChecker.PERMISSION_GRANTED) {  
+                ActivityCompat.requestPermissions(
+                    this.cordova.getActivity(),    
+                    new String[] { android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT },
+                    REQUEST_BLUETOOTH_PERMISSION
+                );
+            }
             checkBTStatus(callbackContext);
             return true;
         } else if (action.equals("list")) {
@@ -108,7 +120,7 @@ public class BluetoothPrinter extends CordovaPlugin {
             }
             return true;
         } else if (action.equals("connected")) {
-            connected(callbackContext);
+	    connected(callbackContext);
             return true;
         } else if (action.equals("disconnect")) {
             try {

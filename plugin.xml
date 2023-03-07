@@ -29,9 +29,14 @@
             <param name="android-package" value="br.com.cordova.printer.bluetooth.BluetoothPrinter"/>
          </feature>
       </config-file>
+           
+      <framework src="androidx.appcompat:appcompat:1.6.1" />     
 
       <config-file target="AndroidManifest.xml" parent="/*">
-         <uses-permission android:name="android.permission.BLUETOOTH" />
+          <uses-permission android:name="android.permission.BLUETOOTH"
+            android:maxSdkVersion="30" />
+          <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+          <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
       </config-file>
 
       <source-file src="src/android/BluetoothPrinter.java" target-dir="src/br/com/cordova/printer/bluetooth" />
